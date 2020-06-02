@@ -39,7 +39,7 @@ def convertEVTX(row):
          + strings[14] + " + 'KeyLen': " + strings[15] + "}"
         if strings[8] not in ["2","5"] \
             and strings[18].lower() not in ["-","localhost","127.0.0.1","::1"]:
-            row['readable'] = "Logon({}) from {} with {}".format(strings[8],strings[18],strings[5])
+            row['readable'] = "Logon({}) from {}({}) with {}".format(strings[8],strings[11],strings[18],strings[5])
             if len(beLoggedOn[(beLoggedOn.source==strings[18]) & (beLoggedOn.Acc==strings[5])]) == 0:
                 row['readable'] = "!!! " + row['readable']
             beLoggedOn = beLoggedOn.append([{"datetime":row['datetime'], \
@@ -64,7 +64,7 @@ def convertEVTX(row):
     elif row['message'].startswith("[106 /") and "Microsoft-Windows-TaskScheduler" in row['message']:
         row['readable'] = "Task created by {}; taskname: {}".format(strings[2], strings[0])
     elif row['message'].startswith("[201 /"):
-        if len(strings) >= 5:
+        if len(strings) >= 4:
             row['readable'] = "Task finished; taskname: {}({}) (resultCode:{})".format(strings[0], strings[2], strings[3])
         else:
             row['readable'] = "Task finished; taskname: {}(-) (resultCode:{})".format(strings[0], strings[2])
