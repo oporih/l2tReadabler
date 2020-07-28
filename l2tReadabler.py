@@ -44,6 +44,8 @@ def convertEVTX(row):
                 row['readable'] = "!!! " + row['readable']
             beLoggedOn = beLoggedOn.append([{"datetime":row['datetime'], \
                             "source":strings[18], "Acc":strings[5]}])
+        elif strings[8] == "10" and strings[18].lower() in ["localhost","127.0.0.1","::1"]:
+            row['readable'] = "Logon({}) from {}({}) with {}".format(strings[8],strings[11],"self(indicate use of frp)",strings[5])
     elif row['message'].startswith("[4648 /"):
         row['message'] =  "[4648]Acc Cred Used{'Acc':" + strings[5] + " + 'AccDomain':" \
          + strings[6] \
@@ -97,7 +99,7 @@ def convertEVTX(row):
     elif row['message'].startswith("[7045 /"):
         row['readable'] = "Service installed: {}".format(strings[1])
     elif row['message'].startswith("[7036 /"):
-        row['readable'] = "Service state change: {} {}".format(strings[1], strings[2])
+        row['readable'] = "Service state change: {} {}".format(strings[1], strings[0])
     elif row['message'].startswith("[4720 /"):
         row['readable'] = "Account {}\\{} created by {}\\{}".format(strings[1], strings[0], strings[5], strings[4])
     elif row['message'].startswith("[12 /") and "Microsoft-Windows-Kernel-General" in row['message']:
@@ -112,6 +114,10 @@ def convertEVTX(row):
         row['readable'] = "WMI consumer event detected"
     elif row['message'].startswith("[5861 /") and 'Microsoft-Windows-WMI-Activity' in row['message']:
         row['readable'] = "WMI consumer event detected"
+    elif row['message'].startswith("[400 /") and 'powershell' in row['message'].lower():
+        row['readable'] = "Powershell executed: {}".format(strings[2].split("HostApplication=")[1].split("EngineVersion=")[0])
+    elif row['message'].startswith("[403 /") and 'powershell' in row['message'].lower():
+        row['readable'] = "Powershell stopped: {}".format(strings[2].split("HostApplication=")[1].split("EngineVersion=")[0])
     elif row['message'].startswith("[800 /") and 'powershell' in row['message'].lower():
         row['readable'] = "Powershell Scriptblock Logged"
     elif row['message'].startswith("[4104 /") and 'Microsoft-Windows-PowerShell' in row['message']:
@@ -126,6 +132,8 @@ def convertEVTX(row):
         row['readable'] = "WinRM connection attempted from other hosts"
     elif row['message'].startswith("[168 /") and 'winrm' in row['message'].lower():
         row['readable'] = "WinRM service activity"
+    elif row['message'].startswith("[4616 /") and 'security' in row['message'].lower():
+        row['readable'] = "System time changed by {}: from {} {} to {} {}".format(strings[1], strings[4], strings[5], strings[6], strings[7])
     else:
         pass
     return row
@@ -140,6 +148,7 @@ logonTo = logonTo.append([{"datetime":"-", "dest":"-", "Acc":"-"}])
 fobj =  open(sys.argv[1],"r",encoding="utf_8", errors="ignore", newline='' )
 fcsv = csv.DictReader(fobj, delimiter=",")
 fieldnames = fcsv.fieldnames
+fieldnames.append("readable")
 writer = csv.DictWriter(fout, fieldnames)
 writer.writeheader()
 for row in fcsv:

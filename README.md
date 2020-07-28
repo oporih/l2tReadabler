@@ -62,6 +62,8 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 * 104: Event log deleted
 * 5860: WMI consumer event
 * 5861: WMI consumer event
+* 400: powershell execution with command line if exists
+* 403: powershell execution with command line if exists
 * 800: powershell scriptblock
 * 4104: powershell scriptblock
 * 40961: powershell console activated
@@ -69,6 +71,7 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 * 6: winrm connection attemped to other host
 * 91: winrm connection attemped from other host
 * 168: winrm service activity
+* 4616: system time changed
 
 ### MSIE 
 * MSIE WebCache container recode, Creation Time
