@@ -47,16 +47,28 @@ def convertEVTX(row):
         elif strings[8] == "10" and strings[18].lower() in ["localhost","127.0.0.1","::1"]:
             row['readable'] = "Logon({}) from {}({}) with {}".format(strings[8],strings[11],"self(indicate use of frp)",strings[5])
     elif row['message'].startswith("[4648 /"):
-        row['message'] =  "[4648]Acc Cred Used{'Acc':" + strings[5] + " + 'AccDomain':" \
-         + strings[6] \
-         + " + 'AccGUID':" + strings[7] + "} | Target Server{'Name':" \
-         + strings[8] + " + 'Info':" + strings[9] \
-         + "} | ProcInfo{'PID': " + strings[10] \
-         + " + 'ProcName':" + strings[11] + "} | Network Info{'NetAddr':" \
-         + strings[12] + " + 'Port:" + strings[13] + "} | Subject{'SID':" \
-         + strings[0] + " + 'Acc':" + strings[1] + " + 'AccDomain':" \
-         + strings[2] + " + 'LogonID':" + strings[3] + " + 'LogonGUID':" \
-         + strings[4] + "}"
+        try:
+            row['message'] =  "[4648]Acc Cred Used{'Acc':" + strings[5] + " + 'AccDomain':" \
+            + strings[6] \
+            + " + 'AccGUID':" + strings[7] + "} | Target Server{'Name':" \
+            + strings[8] + " + 'Info':" + strings[9] \
+            + "} | ProcInfo{'PID': " + strings[10] \
+            + " + 'ProcName':" + strings[11] + "} | Network Info{'NetAddr':" \
+            + strings[12] + " + 'Port:" + strings[13] + "} | Subject{'SID':" \
+            + strings[0] + " + 'Acc':" + strings[1] + " + 'AccDomain':" \
+            + strings[2] + " + 'LogonID':" + strings[3] + " + 'LogonGUID':" \
+            + strings[4] + "}"
+        except:
+            row['message'] =  "[4648]Acc Cred Used{'Acc':" + strings[5] + " + 'AccDomain':" \
+            + strings[6] \
+            + " + 'AccGUID':" + strings[7] + "} | Target Server{'Name':" \
+            + strings[8] + " + 'Info':" + strings[9] \
+            + "} | ProcInfo{'PID': " + strings[10] \
+            + " + 'ProcName': } | Network Info{'NetAddr':" \
+            + strings[11] + " + 'Port:" + strings[12] + "} | Subject{'SID':" \
+            + strings[0] + " + 'Acc':" + strings[1] + " + 'AccDomain':" \
+            + strings[2] + " + 'LogonID':" + strings[3] + " + 'LogonGUID':" \
+            + strings[4] + "}"
         row['readable'] = "Explicit logon to {} from {} with {}\{}".format(strings[8] ,strings[12],strings[6],strings[5])
         # 4648 sometimes records RDP logon to subject host
         if strings[12].lower() not in ["-","localhost","127.0.0.1","::1"] \
