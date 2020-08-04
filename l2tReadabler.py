@@ -23,58 +23,201 @@ def convertEVTX(row):
     reEvtx = "Strings: \[(.*)\]"
     strings = re.search(reEvtx, row['message']).group(1)[1:-1].split("'  '")
     if row['message'].startswith("[4624 /"):
-        row['message'] = "[4624]LogonType:" + strings[8] \
-         + " | NewLogon{'SID':" + strings[4] + " + 'Acc':" + strings[5] \
-         + " + 'AccDomain':" + strings[6] + " + 'LogonID':" + strings[7] \
-         + " + 'LogonGUID':" \
-         + strings[12] + "} | NetworkInfo{'WorkstationName': " + strings[11] \
-         + " + 'SIP':" + strings[18] + " + 'SPort':" + strings[19] \
-         + "} | Process: {'PID':" \
-         + strings[16] + " + 'ProcName': " + strings[17] + "} | Subject{'SID':" \
-         + strings[0] + " + 'Acc':" + strings[1] + " + 'AccDomain':" \
-         + strings[2] \
-         + " + 'LogonID':" + strings[3] + "} | Detail{'LogonProc': " \
-         + strings[9] + " + 'AuthPack': " + strings[10] \
-         + " + 'TransSvc': " + strings[13] + " + 'PackName': " \
-         + strings[14] + " + 'KeyLen': " + strings[15] + "}"
         if strings[8] not in ["2","5"] \
-            and strings[18].lower() not in ["-","localhost","127.0.0.1","::1"]:
-            row['readable'] = "Logon({}) from {}({}) with {}".format(strings[8],strings[11],strings[18],strings[5])
+          and strings[18].lower() not in ["-","localhost","127.0.0.1","::1"]:
+            if strings[8] == "3":
+                row['readable'] = "Network logon(type {}) success".format(strings[8])
+            elif strings[8] == "10":
+                row['readable'] = "RDP logon(type {}) success".format(strings[8])
+            else:
+                row['readable'] = "Logon(type {}) success".format(strings[8])
+            row['readable'] += " from {}({})".format(strings[11],strings[18])
+            row['readable'] += " with {}\{}".format(strings[6],strings[5])
+
             if len(beLoggedOn[(beLoggedOn.source==strings[18]) & (beLoggedOn.Acc==strings[5])]) == 0:
                 row['readable'] = "!!! " + row['readable']
             beLoggedOn = beLoggedOn.append([{"datetime":row['datetime'], \
                             "source":strings[18], "Acc":strings[5]}])
         elif strings[8] == "10" and strings[18].lower() in ["localhost","127.0.0.1","::1"]:
-            row['readable'] = "Logon({}) from {}({}) with {}".format(strings[8],strings[11],"self(indicate use of frp)",strings[5])
+            row['readable'] = "RDP logon(type {}) success".format(strings[8])
+            row['readable'] += " from {}({})(indicate use of frp)".format(strings[11], strings[18])
+            row['readable'] += " with {}\{}".format(strings[6], strings[5])
+
+        row['message'] = "[4624]LogonType: {}".format(strings[8])
+        row['message'] += " | NewLogon{" 
+        row['message'] += "'SID':{} + ".format(strings[4])
+        row['message'] += "'Acc':{} + ".format(strings[5])
+        row['message'] += "'AccDomain':{} + ".format(strings[6])
+        row['message'] += "'LogonID':{} + ".format(strings[7])
+        row['message'] += "'LogonGUID':{}".format(strings[12])
+        row['message'] += "}"
+        row['message'] += " | NetworkInfo{" 
+        row['message'] += "'WorkstationName':{} + ".format(strings[11])
+        row['message'] += "'SrcIP':{} + ".format(strings[18])
+        row['message'] += "'SrcPort':{}".format(strings[19])
+        row['message'] += "}"
+        row['message'] += " | Process{" 
+        row['message'] += "'PID':{} + ".format(strings[16])
+        row['message'] += "'ProcessName':{}".format(strings[17])
+        row['message'] += "}"
+        row['message'] += " | Subject{" 
+        row['message'] += "'SID':{} + ".format(strings[0])
+        row['message'] += "'Acc':{} + ".format(strings[1])
+        row['message'] += "'AccDomain':{} + ".format(strings[2])
+        row['message'] += "'LogonID':{}".format(strings[3])
+        row['message'] += "}"
+        row['message'] += " | Detail{" 
+        row['message'] += "'LogonProc':{} + ".format(strings[9])
+        row['message'] += "'AuthPack':{} + ".format(strings[10])
+        row['message'] += "'TransSvc':{} + ".format(strings[13])
+        row['message'] += "'PackName':{} + ".format(strings[14])
+        row['message'] += "'KeyLen':{}".format(strings[15])
+        row['message'] += "}"
+
+    elif row['message'].startswith("[4625 /"):
+        if strings[12] == "3":
+            row['readable'] = "Network logon(type {}) failed".format(strings[10])
+        elif strings[8] == "10":
+            row['readable'] = "RDP logon(type {}) failed".format(strings[10])
+        else:
+            row['readable'] = "Logon(type {}) failed".format(strings[10])
+        row['readable'] += " from {}({})".format(strings[13],strings[19])
+        row['readable'] += " with {}\{}".format(strings[6],strings[5])
+
+        row['message'] = "[4625]LogonType: {}".format(strings[10])
+        row['message'] += " | FailedLogon{" 
+        row['message'] += "'SID':{} + ".format(strings[4])
+        row['message'] += "'Acc':{} + ".format(strings[5])
+        row['message'] += "'AccDomain':{} + ".format(strings[6])
+        row['message'] += "'Status':{} + ".format(strings[7])
+        row['message'] += "'FailureReason':{} + ".format(strings[8])
+        row['message'] += "'Substatus':{}".format(strings[9])
+        row['message'] += "}"
+        row['message'] += " | NetworkInfo{" 
+        row['message'] += "'WorkstationName':{} + ".format(strings[13])
+        row['message'] += "'SrcIP':{} + ".format(strings[19])
+        row['message'] += "'SrcPort':{}".format(strings[20])
+        row['message'] += "}"
+        row['message'] += " | Process{" 
+        row['message'] += "'PID':{} + ".format(strings[17])
+        row['message'] += "'ProcessName':{}".format(strings[18])
+        row['message'] += "}"
+        row['message'] += " | Subject{" 
+        row['message'] += "'SID':{} + ".format(strings[0])
+        row['message'] += "'Acc':{} + ".format(strings[1])
+        row['message'] += "'AccDomain':{} + ".format(strings[2])
+        row['message'] += "'LogonID':{}".format(strings[3])
+        row['message'] += "}"
+        row['message'] += " | Detail{" 
+        row['message'] += "'LogonProc':{} + ".format(strings[11])
+        row['message'] += "'AuthPack':{} + ".format(strings[12])
+        row['message'] += "'TransSvc':{} + ".format(strings[13])
+        row['message'] += "'PackName':{} + ".format(strings[14])
+        row['message'] += "'KeyLen':{}".format(strings[15])
+        row['message'] += "}"
+        
     elif row['message'].startswith("[4648 /"):
-        try:
-            row['message'] =  "[4648]Acc Cred Used{'Acc':" + strings[5] + " + 'AccDomain':" \
-            + strings[6] \
-            + " + 'AccGUID':" + strings[7] + "} | Target Server{'Name':" \
-            + strings[8] + " + 'Info':" + strings[9] \
-            + "} | ProcInfo{'PID': " + strings[10] \
-            + " + 'ProcName':" + strings[11] + "} | Network Info{'NetAddr':" \
-            + strings[12] + " + 'Port:" + strings[13] + "} | Subject{'SID':" \
-            + strings[0] + " + 'Acc':" + strings[1] + " + 'AccDomain':" \
-            + strings[2] + " + 'LogonID':" + strings[3] + " + 'LogonGUID':" \
-            + strings[4] + "}"
-        except:
-            row['message'] =  "[4648]Acc Cred Used{'Acc':" + strings[5] + " + 'AccDomain':" \
-            + strings[6] \
-            + " + 'AccGUID':" + strings[7] + "} | Target Server{'Name':" \
-            + strings[8] + " + 'Info':" + strings[9] \
-            + "} | ProcInfo{'PID': " + strings[10] \
-            + " + 'ProcName': } | Network Info{'NetAddr':" \
-            + strings[11] + " + 'Port:" + strings[12] + "} | Subject{'SID':" \
-            + strings[0] + " + 'Acc':" + strings[1] + " + 'AccDomain':" \
-            + strings[2] + " + 'LogonID':" + strings[3] + " + 'LogonGUID':" \
-            + strings[4] + "}"
         row['readable'] = "Explicit logon to {} from {} with {}\{}".format(strings[8] ,strings[12],strings[6],strings[5])
+        try:
+            row['message'] = "[4648]Explicit logon{"
+            row['message'] += "'Acc':{} + ".format(strings[5])
+            row['message'] += "'AccDomain':{} + ".format(strings[6])
+            row['message'] += "'AccGUID':{}".format(strings[7])
+            row['message'] += "}"
+            row['message'] += " | Target Server{" 
+            row['message'] += "'Name':{} + ".format(strings[8])
+            row['message'] += "'Info':{}".format(strings[9])
+            row['message'] += "}"
+            row['message'] += " | Proc Info{" 
+            row['message'] += "'PID':{} + ".format(strings[10])
+            row['message'] += "'ProcName':{}".format(strings[11])
+            row['message'] += "}"
+            row['message'] += " | Network Info{" 
+            row['message'] += "'NetAddr':{} + ".format(strings[12])
+            row['message'] += "'Port':{}".format(strings[13])
+            row['message'] += "}"
+            row['message'] += " | Subject{" 
+            row['message'] += "'SID':{} + ".format(strings[0])
+            row['message'] += "'Acc':{} + ".format(strings[1])
+            row['message'] += "'AccDomain':{} + ".format(strings[2])
+            row['message'] += "'LogonID':{} + ".format(strings[3])
+            row['message'] += "'LogonGUID':{}".format(strings[4])
+            row['message'] += "}"
+
+        except:
+            row['message'] = "[4648]Explicit logon{"
+            row['message'] += "'Acc':{} + ".format(strings[5])
+            row['message'] += "'AccDomain':{} + ".format(strings[6])
+            row['message'] += "'AccGUID':{}".format(strings[7])
+            row['message'] += "}"
+            row['message'] += " | Target Server{" 
+            row['message'] += "'Name':{} + ".format(strings[8])
+            row['message'] += "'Info':{}".format(strings[9])
+            row['message'] += "}"
+            row['message'] += " | Proc Info{" 
+            row['message'] += "'PID':{} + ".format(strings[10])
+            row['message'] += "'ProcName':-"
+            row['message'] += "}"
+            row['message'] += " | Network Info{" 
+            row['message'] += "'NetAddr':{} + ".format(strings[11])
+            row['message'] += "'Port':{}".format(strings[12])
+            row['message'] += "}"
+            row['message'] += " | Subject{" 
+            row['message'] += "'SID':{} + ".format(strings[0])
+            row['message'] += "'Acc':{} + ".format(strings[1])
+            row['message'] += "'AccDomain':{} + ".format(strings[2])
+            row['message'] += "'LogonID':{} + ".format(strings[3])
+            row['message'] += "'LogonGUID':{}".format(strings[4])
+            row['message'] += "}"
         # 4648 sometimes records RDP logon to subject host
         if strings[12].lower() not in ["-","localhost","127.0.0.1","::1"] \
             and strings[11].lower() == "winlogon.exe" \
             and strings[8].lower() == "localhost":
             row['readable'] = "(RDP) " + row['readable']
+    elif row['message'].startswith("[4724 /"):
+        row['readable'] = "Account {}\{}".format(strings[1] ,strings[0])
+        row['readable'] += " password changed by {}\{}".format(strings[5],strings[4])
+
+        row['message'] = "[4724]Account password changed{"
+        row['message'] += "'Acc':{} + ".format(strings[0])
+        row['message'] += "'AccDomain':{} + ".format(strings[1])
+        row['message'] += "'AccSID':{} + ".format(strings[2])
+        row['message'] += "'SrcAcc':{} + ".format(strings[4])
+        row['message'] += "'SrcAccDomain':{} + ".format(strings[5])
+        row['message'] += "'SrcAccSID':{} + ".format(strings[3])
+        row['message'] += "'LogonSessionId':{} + ".format(strings[6])
+        row['message'] += "}"
+    elif row['message'].startswith("[4726 /"):
+        row['readable'] = "Account {}\{}".format(strings[1],strings[0])
+        row['readable'] += " deleted by {}\{}".format(strings[5],strings[4])
+
+        row['message'] = "[4726]Account deleted{"
+        row['message'] += "'Acc':{} + ".format(strings[0])
+        row['message'] += "'AccDomain':{} + ".format(strings[1])
+        row['message'] += "'AccSID':{} + ".format(strings[2])
+        row['message'] += "'SrcAcc':{} + ".format(strings[4])
+        row['message'] += "'SrcAccDomain':{} + ".format(strings[5])
+        row['message'] += "'SrcAccSID':{} + ".format(strings[3])
+        row['message'] += "'LogonSessionId':{} + ".format(strings[6])
+        row['message'] += "'PrivList':{} + ".format(strings[7])
+        row['message'] += "}"
+    elif row['message'].startswith("[4732 /"):
+        row['readable'] = "Account {}({})".format(strings[0], strings[1])
+        row['readable'] += " is added to group {}\{}".format(strings[3], strings[2])
+        row['readable'] += " by {}\{}".format(strings[7], strings[6])
+
+        row['message'] = "[4732]Account added to group{"
+        row['message'] += "'Acc':{} + ".format(strings[0])
+        row['message'] += "'AccSID':{} + ".format(strings[1])
+        row['message'] += "'TargetGroup':{} + ".format(strings[2])
+        row['message'] += "'TargetDomain':{} + ".format(strings[3])
+        row['message'] += "'TargetSID':{} + ".format(strings[4])
+        row['message'] += "'SubjectSID':{} + ".format(strings[5])
+        row['message'] += "'SubjectAcc':{} + ".format(strings[6])
+        row['message'] += "'SubjectDomain':{} + ".format(strings[7])
+        row['message'] += "'SubjectLogonSessionId':{} + ".format(strings[8])
+        row['message'] += "'PrivList':{} + ".format(strings[9])
+        row['message'] += "}"
     elif row['message'].startswith("[106 /") and "Microsoft-Windows-TaskScheduler" in row['message']:
         row['readable'] = "Task created by {}; taskname: {}".format(strings[2], strings[0])
     elif row['message'].startswith("[201 /"):
@@ -97,6 +240,8 @@ def convertEVTX(row):
         row['readable'] = "RDP attempt to {}".format(strings[1])
     elif row['message'].startswith("[1027 /") and "Microsoft-Windows-TerminalServices-ClientActiveXCore" in row['message']:
         row['readable'] = "RDP success to {}".format(strings[0])
+    elif row['message'].startswith("[1024 /") and "Microsoft-Windows-TerminalServices-ClientActiveXCore" in row['message']:
+        row['readable'] = "RDP attempt from {}".format(strings[1])
     elif row['message'].startswith("[1029 /") and "Microsoft-Windows-TerminalServices-ClientActiveXCore" in row['message']:
         if strings[0] == "UmTGMgTFbA35+PSgMOoZ2ToPpAK+awC010ZOYWQQIfc=-" or strings[0] == "WAlZ81aqzLQmoWEfQivmPQwJxIm/XQcDjplQdjznr5E=-":
             row['readable'] = "RDP attempt with username Administrator".format(strings[0])

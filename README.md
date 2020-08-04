@@ -25,9 +25,15 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 ## Sample readable columns
 ### Logon event
 
-* 4624: `!!! Logon(3) from 172.16.6.14 with spsql`
+* 4624: `!!! Network Logon(type 3) success from 172.16.6.14 with domain\spsql`
     * `!!!` means first logon observation with (sourceIP, username) pair.
+* 4625: `Network logon(type 3) failed from 172.16.6.14 with domain\spsql`
 * 4648: `Explicit logon to base-hunt.shieldbase.lan from 172.16.5.25 with SHIELDBASE.LAN\spsql`
+
+### Account event
+* 4724: `Account domain\spsql password changed by domain\maluser`
+* 4726: `Account domain\spsql deleted by domain\maluser`
+* 4732: `Account domain\spsql is added to group domain\domain admins by domain\maluser`
 
 ### RDP event
 * `RDP established from 172.16.6.14 with SHIELDBASE\spsql`
@@ -40,8 +46,12 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 
 ## Supportted events
 ### Event Log
-* 4624: user Logon
+* 4624: logon success
+* 4625: logon fail
 * 4648: explicitly used logon credential
+* 4724: user password changed
+* 4726: user deleted
+* 4732: user added to group
 * 106: task created
 * 201: task finished
 * 1149: RDP established to subject host
@@ -50,7 +60,8 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 * 24: RDP disconnected by other host
 * 1102: RDP attempted to other host
 * 1027: RDP success to other host
-* 1029: RDP attempt to other host with username
+* 1024: RDP attempt to this host from <ip address>
+* 1029: RDP attempt to this host with username
 * 4778: RDP reconnected from other host
 * 4779: RDP disconnected by other host
 * 7045: service installed
