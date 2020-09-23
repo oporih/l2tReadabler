@@ -9,7 +9,7 @@ import csv
 import traceback
 import ipdb
 import time
-from vtScanMD5 import scanVT
+from vtScanHash import scanVT
 import pandas as pd
 
 
