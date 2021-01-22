@@ -49,13 +49,16 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 * 4624: logon success
 * 4625: logon fail
 * 4648: explicitly used logon credential
-* 4724: user password changed
+* 4724: user password reset
 * 4726: user deleted
 * 4732: user added to group
 * 106: task created
+* 141: task deleted
+* 200: schedule task executed
 * 201: task finished
 * 1149: RDP established to subject host
 * 21: RDP established from other host
+* 22: RDP shell start from other host
 * 25: RDP reconnected from other host
 * 24: RDP disconnected by other host
 * 1102: RDP attempted to other host
@@ -68,7 +71,6 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 * 7036: service status changed
 * 4720: Account created
 * 12: system shudown
-* 200: schedule task executed
 * 1102: Security Event deleted
 * 104: Event log deleted
 * 5860: WMI consumer event
@@ -83,6 +85,14 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 * 91: winrm connection attemped from other host
 * 168: winrm service activity
 * 4616: system time changed
+* 31001: SMB 認証失敗 @Microsoft-Windows-SMBClient%4Security.evtx
+* 30800: SMB コネクション サーバ名解決に失敗@Microsoft-Windows-SMBClient%4connectivity.evtx
+* 30803: SMB コネクション失敗@Microsoft-Windows-SMBClient%4connectivity.evtx(IPもわかる need parse)
+* 30804: SMB コネクション切断@Microsoft-Windows-SMBClient%4connectivity.evtx(IPもわかる need parse)
+* 30805: SMB セッション終了@Microsoft-Windows-SMBClient%4connectivity.evtx
+* 30807: SMB コネクション切断@Microsoft-Windows-SMBClient%4connectivity.evtx（sharenameが分かる）
+* 31010: SMB share への接続失敗@Microsoft-Windows-SMBClient%4Security.evtx（sharenameが分かる）
+
 
 ### MSIE 
 * MSIE WebCache container recode, Creation Time
@@ -102,7 +112,9 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 
 ### File Access
 * Shellbag
-
+* reg HKEY_CURRENT_USER\Software\Microsoft\Windows\Currentversion\Explorer\RecentDocs\<extension>
+* reg HKEY_CURRENT_USER\Software\Microsoft\Windows\Currentversion\Explorer\RecentDocs\Folder
+* reg HKEY_CURRENT_USER\Software\Microsoft\Windows\Currentversion\Explorer\RecentDocs
 
 ### Suspicious File Exist
 * .rar(MFT)
