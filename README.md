@@ -49,9 +49,15 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 * 4624: logon success
 * 4625: logon fail
 * 4648: explicitly used logon credential
+* 4720: Account created
+* 4722: Account enabled
 * 4724: user password reset
 * 4726: user deleted
-* 4732: user added to group
+* 4727: global group created
+* 4728: acc add to global group
+* 4731: local group created
+* 4732: user added to local group
+* 4741: computer acc created
 * 106: task created
 * 141: task deleted
 * 200: schedule task executed
@@ -69,7 +75,6 @@ RDP established from 172.16.6.14 with SHIELDBASE\spsql
 * 4779: RDP disconnected by other host
 * 7045: service installed
 * 7036: service status changed
-* 4720: Account created
 * 12: system shudown
 * 1102: Security Event deleted
 * 104: Event log deleted

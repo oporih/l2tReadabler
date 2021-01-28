@@ -224,43 +224,40 @@ def readableEVTX(row):
             #row['message'] += "'LogonID':{} + ".format(strings[2])
             #row['message'] += "'LogonGUID':{}".format(strings[3])
             #row['message'] += "}"
+    elif row['message'].startswith("[4720 /"):
+        row['readable'] = "eventlog 4720 hit"
+        row['readable'] = "Account {}\\{} created by {}\\{}".format(strings[1], strings[0], strings[5], strings[4])
+        row['tag'] = "Account Created"
+    elif row['message'].startswith("[4722 /"):
+        row['readable'] = "eventlog 4722 hit"
+        row['readable'] = "Account {}\\{} enabled by {}\\{}".format(strings[1], strings[0], strings[5], strings[4])
+        row['tag'] = "Account Enabled"
     elif row['message'].startswith("[4724 /") and "Security-Auditing" in row['message']:
         row['tag'] = "Password Reset"
         row['readable'] = "eventlog 4724 hit"
-        row['readable'] = "Account {}\{}".format(strings[0] ,strings[0])
-        row['readable'] += " password reset by {}\{}".format(strings[4],strings[4])
-
-        #row['message'] = "[4723]Account password changed{"
-        #row['message'] += "'Acc':{} + ".format(strings[-1])
-        #row['message'] += "'AccDomain':{} + ".format(strings[0])
-        #row['message'] += "'AccSID':{} + ".format(strings[1])
-        #row['message'] += "'SrcAcc':{} + ".format(strings[3])
-        #row['message'] += "'SrcAccDomain':{} + ".format(strings[4])
-        #row['message'] += "'SrcAccSID':{} + ".format(strings[2])
-        #row['message'] += "'LogonSessionId':{} + ".format(strings[5])
-        #row['message'] += "}"
-    elif row['message'].startswith("[4725 /") and "Security-Auditing" in row['message']:
+        row['readable'] = "Account {}\{}".format(strings[1] ,strings[0])
+        row['readable'] += " password reset by {}\{}".format(strings[5],strings[4])
+    elif row['message'].startswith("[4726 /") and "Security-Auditing" in row['message']:
         row['tag'] = "Account Deleted"
-        row['readable'] = "eventlog 4725 hit"
-        row['readable'] = "Account {}\{}".format(strings[0],strings[0])
-        row['readable'] += " deleted by {}\{}".format(strings[4],strings[4])
-
-        #row['message'] = "[4725]Account deleted{"
-        #row['message'] += "'Acc':{} + ".format(strings[-1])
-        #row['message'] += "'AccDomain':{} + ".format(strings[0])
-        #row['message'] += "'AccSID':{} + ".format(strings[1])
-        #row['message'] += "'SrcAcc':{} + ".format(strings[3])
-        #row['message'] += "'SrcAccDomain':{} + ".format(strings[4])
-        #row['message'] += "'SrcAccSID':{} + ".format(strings[2])
-        #row['message'] += "'LogonSessionId':{} + ".format(strings[5])
-        #row['message'] += "'PrivList':{} + ".format(strings[6])
-        #row['message'] += "}"
+        row['readable'] = "eventlog 4726 hit"
+        row['readable'] = "Account {}\{}".format(strings[1],strings[0])
+        row['readable'] += " deleted by {}\{}".format(strings[5],strings[4])
+    elif row['message'].startswith("[4727 /") and "Security-Auditing" in row['message']:
+        row['tag'] = "Group Created"
+        row['readable'] = "eventlog 4727 hit"
+        row['readable'] = "Global group {}({})".format(strings[1], strings[0])
+        row['readable'] += " is created by {}\{}".format(strings[5], strings[4])
+    elif row['message'].startswith("[4728 /") and "Security-Auditing" in row['message']:
+        row['tag'] = "Acc Group Add"
+        row['readable'] = "eventlog 4728 hit"
+        row['readable'] = "Acc {}".format(strings[0])
+        row['readable'] += " is add to global group {}\{}".format(strings[3], strings[2])
+        row['readable'] += " by {}\{}".format(strings[7], strings[6])
     elif row['message'].startswith("[4731 /") and "Security-Auditing" in row['message']:
-        row['tag'] = "Group Add"
+        row['tag'] = "Group Created"
         row['readable'] = "eventlog 4731 hit"
-        row['readable'] = "Account {}({})".format(strings[-1], strings[1])
-        row['readable'] += " is added to group {}\{}".format(strings[2], strings[2])
-        row['readable'] += " by {}\{}".format(strings[6], strings[6])
+        row['readable'] = "Local group {}({})".format(strings[1], strings[0])
+        row['readable'] += " is created by {}\{}".format(strings[5], strings[4])
 
         #row['message'] = "[4731]Account added to group{"
         #row['message'] += "'Acc':{} + ".format(strings[-1])
@@ -274,6 +271,12 @@ def readableEVTX(row):
         #row['message'] += "'SubjectLogonSessionId':{} + ".format(strings[8])
         #row['message'] += "'PrivList':{} + ".format(strings[9])
         #row['message'] += "}"
+    elif row['message'].startswith("[4732 /") and "Security-Auditing" in row['message']:
+        row['tag'] = "Acc Group Add"
+        row['readable'] = "eventlog 4732 hit"
+        row['readable'] = "Acc {}".format(strings[0])
+        row['readable'] += " is add to local group {}\{}".format(strings[3], strings[2])
+        row['readable'] += " by {}\{}".format(strings[7], strings[6])
     elif row['message'].startswith("[4741 /") and "Security-Auditing" in row['message']:
         row['tag'] = "Account Created"
         row['readable'] = "eventlog 4741 hit"
@@ -368,10 +371,6 @@ def readableEVTX(row):
         #row['readable'] = "Service state change: {} {}".format(strings[1], strings[0])
         #row['tag'] = "Persistence"
         pass
-    elif row['message'].startswith("[4720 /"):
-        row['readable'] = "eventlog 4720 hit"
-        row['readable'] = "Account {}\\{} created by {}\\{}".format(strings[1], strings[0], strings[5], strings[4])
-        row['tag'] = "Account Created"
     elif row['message'].startswith("[12 /") and "Microsoft-Windows-Kernel-General" in row['message']:
         row['readable'] = "eventlog 12 hit"
         row['readable'] = "System Shutdown"
