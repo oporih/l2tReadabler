@@ -583,7 +583,7 @@ def l2tReadable():
     for row in fcsv:
         #print(row)
         row['readable'] = "-"
-        row['datetime_prec'] = row['datetime_prec'].split(".")[0]
+        row['datetime_prec'] = row['datetime_prec'].split(".")[0].strip("Z")
         try:
             if row['parser'].lower()=="winevtx":
                 row = readableEVTX(row)
