@@ -596,7 +596,7 @@ def l2tReadable():
             #row.pop(None)
             row.move_to_end('readable',last=False)
             row.move_to_end('username',last=False)
-            row.move_to_end('event',last=False)
+            row.move_to_end('tag',last=False)
             row.move_to_end('datetime',last=False)
 
             writer.writerow(row)
@@ -605,7 +605,7 @@ def l2tReadable():
             row['readable'] += "(parse error)"
             row.move_to_end('readable',last=False)
             row.move_to_end('username',last=False)
-            row.move_to_end('event',last=False)
+            row.move_to_end('tag',last=False)
             row.move_to_end('datetime',last=False)
             #ipdb.set_trace()
             writer.writerow(row)
