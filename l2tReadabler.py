@@ -571,18 +571,19 @@ def readableFILE(row):
 
 def l2tReadable():
     fout = open("edit-" + os.path.basename(sys.argv[1]),"w")
-
-
     fobj =  open(sys.argv[1],"r",encoding="utf_8", errors="ignore", newline='' )
     fcsv = csv.DictReader(fobj, delimiter=",")
-    fieldnames = fcsv.fieldnames
+    fieldnames = []
+    for i in fcsv.fieldnames:
+        fieldnames.append(i)
     fieldnames.remove("username")
-    fieldnames = fieldnames[0:1] + ["event","username","readable"] + fieldnames[1:]
+    fieldnames = fieldnames[0:1] + ["datetime_prec","tag","username","readable"] + fieldnames[1:]
     writer = csv.DictWriter(fout, fieldnames)
     writer.writeheader()
     for row in fcsv:
         #print(row)
         row['readable'] = "-"
+        row['datetime_prec'] = row['datetime_prec'].split(".")[0]
         try:
             if row['parser'].lower()=="winevtx":
                 row = readableEVTX(row)
